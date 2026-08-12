@@ -1,4 +1,4 @@
-import { Antenna, Moon, SunMedium } from "lucide-react";
+import { Moon, SunMedium } from "lucide-react";
 import type { AircraftCardData } from "../types/aircraftTypes";
 import { Plane } from 'lucide-react';
 
