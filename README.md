@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# Avgeek Aircraft Search & Hangar
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A feature‑rich, TypeScript‑only React app that lets users search for aircraft, inspect specs, and pin them to a personal “hangar”.
+>
+> Built with **Vite + React + ESLint + Tailwind CSS**, it demonstrates modern component patterns, performance‑oriented hooks, and thoughtful UX.
+>
+> fast lookup, keyboard accessibility, and persistent storage (results cached (LRU+TTL) + localStorage) are all implemented in a small, self‑contained codebase.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Feature | What it Does | Where it Lives |
+|---------|--------------|----------------|
+| **Instant Search** | Real‑time, debounced lookup (3+ chars required) that shows results as you type. | `src/hooks/useAircraftSearch.ts` + `src/components/SearchAircraft.tsx` |
+| **Search Results** | Accessible list that highlights matches, supports keyboard navigation, and triggers add‑to‑hangar actions. | `src/components/SearchResults.tsx` + `src/hooks/useKeyboardNav.ts` |
+| **Hangar** | Persisted list of favorite aircraft. Items are cached in Indexed‑DB (LRU‑TTL) and user settings live in `localStorage`. | `src/hooks/useAircraftCache.ts` + `src/hooks/useLocalStorage.ts` |
+| **Aircraft Modal** | Full spec view that opens inline, with delete capability. | `src/components/AircraftDetailModal.tsx` |
+| **Infinite Loading** | Lazy “load‑more” of saved aircraft via IntersectionObserver and debounced timeout. | `src/utils/createEndReachedObserver.ts` |
+| **Theme Toggle** | Light/Dark mode auto‑detection, persistence, and dynamic CSS variable injection. | `src/hooks/useLocalStorage.ts` + `src/App.tsx` |
+| **Sticky Header** | Header becomes translucent and fixed once scrolled past a sentinel div. | `src/components/Header.tsx` |
+| **Keyboard Accessibility** | Global shortcuts for search focus, arrow‑navigation, and theme toggle. | `src/hooks/useKeyboardNav.ts` |
 
-## React Compiler
+## 📦 React Design Patterns
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Pattern | Implementation |
+|---------|----------------|
+| **Refs + ForwardRef** | `AircraftCard` is a forward‑ref component so the parent can track when each card renders (used for infinite scroll). |
+| **LayoutEffect for Scroll Control** | In `src/App.tsx` a `useLayoutEffect` disables native scroll restoration and scrolls to top on mount. |
+| **IntersectionObserver helpers** | `createIntersectionObserver` returns a disconnect function; every observer is cleaned up, avoiding memory leaks. |
+| **State + Ref sync** | `useRef` stores the latest value of async flags (`isLoadingMoreHangarRef`) so callbacks can read the current state. |
+| **Memoized Sub‑List** | `useMemo` slices the hangar array for pagination and maintains reverse order for “most recently added first.” |
+| **Conditional Rendering** | Search results show only when query ≥ 3 and data isn’t stale, preventing unnecessary re‑renders. |
+| **Accessible Buttons** | All actionable UI uses aria‑labels and keyboard event handling (Enter / Space). |
 
-## Expanding the ESLint configuration
+## Development run steps
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **TypeScript** – strict configuration with ESLint + typed lint rules.  
+- **Build** – `vite build` → `dist/`.  
+- **No tests** – this repo is a curated demo for showcase.  
+- **Accessibility** – keyboard navigation and visual focus styling are fully WCAG‑compliant.  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Quick Start
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+$ npm i
+$ npm run dev   # Vite dev server
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**What I learned**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- practiced mastery over React hooks, state management, and performance patterns.  
+- practiced how to architect a complex‑interaction app while keeping code readable and maintainable.  
+- Used modern tooling (Vite, TS, ESLint, Tailwind) and detailed documentation for rapid onboarding.
