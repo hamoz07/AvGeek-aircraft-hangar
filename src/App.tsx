@@ -63,6 +63,10 @@ function App() {
     setSelectedAircraft(aircraft);
   }, []);
 
+  const handleClose = useCallback(() => {
+    setSelectedAircraft(null);
+  }, []);
+
   const lastOneCallbackRef = useCallback((node: HTMLElement | null) => {
     lastOne.current = node;
     if (node) setLastCardMounted((current) => current + 1);
@@ -216,7 +220,7 @@ function App() {
       <AircraftDetailModal
         open={Boolean(selectedAircraft)}
         aircraft={selectedAircraft}
-        onClose={() => setSelectedAircraft(null)}
+        onClose={handleClose}
       />
     </div>
   );
