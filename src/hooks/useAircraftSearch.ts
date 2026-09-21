@@ -124,20 +124,22 @@ const { manufacturer, model } = useMemo(() => {
     };
   }, [manufacturer, model, setPersistedEntries]);
 
-  useEffect(() => {
-    const resetTimer = window.setTimeout(() => setSearchVisibleCount(0), 0);
-    if (baseSearchResults.length === 0) return () => window.clearTimeout(resetTimer);
-    let i = 0;
-    const interval = window.setInterval(() => {
-      i += 1;
-      setSearchVisibleCount(i);
-      if (i >= baseSearchResults.length) window.clearInterval(interval);
-    }, 60);
-    return () => {
-      window.clearTimeout(resetTimer);
-      window.clearInterval(interval);
-    };
-  }, [baseSearchResults]);
+
+
+    useEffect(() => {
+      const resetTimer = window.setTimeout(() => setSearchVisibleCount(0), 0);
+      if (baseSearchResults.length === 0) return () => window.clearTimeout(resetTimer);
+      let i = 0;
+      const interval = window.setInterval(() => {
+        i += 1;
+        setSearchVisibleCount(i);
+        if (i >= baseSearchResults.length) window.clearInterval(interval);
+      }, 60);
+      return () => {
+        window.clearTimeout(resetTimer);
+        window.clearInterval(interval);
+      };
+    }, [baseSearchResults]);
 
   return {
     query,

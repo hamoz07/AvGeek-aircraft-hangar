@@ -1,6 +1,6 @@
 import { Building2, Gauge, PlaneTakeoff, Ruler, ShieldCheck, Users, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { AircraftDetailsModalData } from "../types/aircraftTypes";
+import { useEffect, useState, use, useRef } from "react";
+import type { AircraftApiItem, AircraftDetailsModalData } from "../types/aircraftTypes";
 
 type AircraftDetailModalProps = {
   aircraft: AircraftDetailsModalData | null;
@@ -13,8 +13,10 @@ const formatValue = (value: number | null, unit: string) => {
   return `${value.toLocaleString()} ${unit}`;
 };
 
-export const AircraftDetailModal = ({ aircraft, open, onClose }: AircraftDetailModalProps) => {
+export const AircraftDetailModal = ({ aircraft, open, onClose,
+}: AircraftDetailModalProps) => {
   const [animateClass, setAnimateClass] = useState("");
+
   useEffect(() => {
     if (!open) return;
 
@@ -26,7 +28,7 @@ export const AircraftDetailModal = ({ aircraft, open, onClose }: AircraftDetailM
     return () => document.removeEventListener("keydown", handleKeyDown);    
   }, [onClose, open]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (open) {
       setAnimateClass("animate__animated animate__slideInUp");
     } else if (!open && animateClass.includes("slideInUp")) {
@@ -118,7 +120,6 @@ export const AircraftDetailModal = ({ aircraft, open, onClose }: AircraftDetailM
         <div className="mt-4 rounded-2xl border border-[var(--glass-border)] bg-white/20 p-4 text-sm text-(--text-muted) dark:bg-slate-950/30">
           <p className="font-semibold text-(--text-main)">Engine spec</p>
           <p className="mt-1">{aircraft.engineType}</p>
-          
         </div>
       </section>
     </div>

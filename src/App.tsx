@@ -16,11 +16,10 @@ function App() {
   const [theme, setTheme] = useLocalStorage<ThemeMode>("aircraft-theme", "dark");
   const [selectedAircraft, setSelectedAircraft] = useState<AircraftDetailsModalData | null>(null);
   const [isLoadingMoreHangar, setIsLoadingMoreHangar] = useState(false);
-  const [lastCardMounted, setLastCardMounted] = useState(0);
+ const [lastCardNode, setLastCardNode] = useState<HTMLElement | null>(null);
   const [visibleCount, setVisibleCount] = useState(10);
   const myULref = useRef<HTMLUListElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const lastOne = useRef<HTMLElement | null>(null);
   const hasUserScrolledRef = useRef(false);
   const isLoadingMoreHangarRef = useRef(isLoadingMoreHangar);
   const [isSticky, setIsSticky] = useState(false);
@@ -67,10 +66,7 @@ function App() {
     setSelectedAircraft(null);
   }, []);
 
-  const lastOneCallbackRef = useCallback((node: HTMLElement | null) => {
-    lastOne.current = node;
-    if (node) setLastCardMounted((current) => current + 1);
-  }, []);
+
 
   const toggleTheme = useCallback(() => {
     setTheme((c) => (c === "light" ? "dark" : "light"));
@@ -117,13 +113,11 @@ function App() {
   }, [displayedHangar.length]);
 
   useEffect(() => {
-    if (!hasMoreHangar) return;
-    const target = lastOne.current;
-    if (!target) return;
+   if (!lastCardNode || !hasMoreHangar) return;
 
     let timer: number | null = null;
     const disconnect = createIntersectionObserver(
-      target,
+      lastCardNode,
       () => {
         if (isLoadingMoreHangarRef.current) return;
         if (!hasMoreHangar) return;
@@ -133,11 +127,14 @@ function App() {
         setIsLoadingMoreHangar(true);
 
         timer = window.setTimeout(() => {
-          console.log("running")
           isLoadingMoreHangarRef.current = false;
           setIsLoadingMoreHangar(false);
           loadMore();
         }, 1200);
+        // recommendation by ai of what changes in production:
+        // 2. Await your actual data fetch function instead of setTimeout
+        // await loadMore();
+        // and resetting isLoadingMoreHangarRef.current = false; and setIsLoadingMoreHangar(false); after the await in a finally block "try and finally"
       },
       {
         triggerWhen: "enters",
@@ -149,7 +146,7 @@ function App() {
       if (timer !== null) window.clearTimeout(timer);
       disconnect();
     };
-  }, [hasMoreHangar, lastCardMounted, loadMore, visibleHangar.length]);
+  }, [hasMoreHangar, lastCardNode, loadMore, visibleHangar.length]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -200,7 +197,7 @@ function App() {
             aircraft={aircraft}
             onDeleteAircraft={handleDeleteAircraft}
             onOpenDetails={handleOpenAircraftDetails}
-            ref={hasMoreHangar && array.length - 1 === index ? lastOneCallbackRef : null}
+            ref={hasMoreHangar && array.length - 1 === index ? setLastCardNode : null}
           />
         ))}
 
